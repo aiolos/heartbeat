@@ -1,11 +1,16 @@
-version: '3.3'
+heartbeat:
+  image: webdevops/php-nginx:7.2
+  ports:
+    - 8084:80
+  environment:
+    - WEB_DOCUMENT_ROOT=/app/public/
+  volumes:
+    - ./:/app
+  links:
+    - mysql
 
-services:
-  app:
-    image: heartbeat-image
-    volumes:
-      - .:/var/www/html
-    ports:
-      - mode: host
-        target: 80
-        published: 8080
+mysql:
+  image: mysql:latest
+  environment:
+    MYSQL_ROOT_PASSWORD: ThisIsFarTooSimple
+    MYSQL_DATABASE: heartbeat

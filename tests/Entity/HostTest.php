@@ -7,13 +7,13 @@ use PHPUnit\Framework\TestCase;
 
 class HostTest extends TestCase
 {
-    const uuidRegex = '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/';
+    const UUIDREGEX = '/[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}/';
 
     public function testItCreatesAUuidHash()
     {
         $host = new Host();
         $host->createHash();
-        $this->assertRegExp(self::uuidRegex, $host->getHash());
+        $this->assertRegExp(self::UUIDREGEX, $host->getHash());
     }
 
     public function testItCreatesAHostWithHash()
@@ -21,7 +21,7 @@ class HostTest extends TestCase
         $host = Host::create('someHostname', 'P1D');
         $this->assertEquals('someHostname', $host->getName());
         $this->assertEquals('P1D', $host->getTtl());
-        $this->assertRegExp(self::uuidRegex, $host->getHash());
+        $this->assertRegExp(self::UUIDREGEX, $host->getHash());
     }
 
     public function testItThrowsExceptionOnWrongTtl()

@@ -106,4 +106,13 @@ class Heartbeat
     {
         $this->host = $host;
     }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'ip' => $this->getIp(),
+            'datetime' => $this->getDatetime()->format(DATE_ATOM),
+        ];
+    }
 }

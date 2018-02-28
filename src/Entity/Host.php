@@ -2,10 +2,13 @@
 
 namespace App\Entity;
 
+use App\Exceptions\InvalidIntervalException;
+use DateInterval;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Id\UuidGenerator;
 use Doctrine\ORM\Mapping as ORM;
+use Ramsey\Uuid\Uuid;
+use Throwable;
 
 /**
  * @ORM\Entity
@@ -41,6 +44,7 @@ class Host
 
     /**
      * @ORM\OneToMany(targetEntity="Heartbeat", mappedBy="host")
+     * @ORM\OrderBy({"datetime" = "DESC"})
      * @var Collection An ArrayCollection of Heartbeats.
      **/
     protected $heartbeats;
@@ -52,6 +56,11 @@ class Host
 
     public static function create($name, $ttl)
     {
+        try {
+            new DateInterval($ttl);
+        } catch (Throwable $e) {
+            throw new InvalidIntervalException('Invalid interval given');
+        }
         $host = new Host();
         $host->setName($name);
         $host->setTtl($ttl);
@@ -128,8 +137,13 @@ class Host
         $this->heartbeats = $heartbeats;
     }
 
+    public function getLastHeartbeat(): Heartbeat
+    {
+        return $this->getHeartbeats()->first();
+    }
+
     public function createHash()
     {
-        $this->hash = uniqid("", true);
+        $this->hash = Uuid::uuid4();
     }
 }

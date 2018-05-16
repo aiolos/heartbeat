@@ -29,7 +29,7 @@ class HostController extends Controller
 
         return new JsonResponse([
             'id' => $host->getId(),
-            'hash' => $host->getHash(),
+            'uuid' => $host->getHash(),
         ]);
     }
 
@@ -50,12 +50,7 @@ class HostController extends Controller
             throw new HostNotFoundException('Unknown Host');
         }
 
-        return new JsonResponse([
-            'id' => $host->getId(),
-            'name' => $host->getName(),
-            'ttl' => $host->getTtl(),
-            'last' => $host->getLastHeartbeat() ? $host->getLastHeartbeat()->toArray() : null,
-        ]);
+        return new JsonResponse($host->toArray());
     }
 
     /**
@@ -70,14 +65,8 @@ class HostController extends Controller
 
         /** @var Host $host */
         $hosts = $em->getRepository('App\Entity\Host')->findAll();
-        $hostsArray = array_map(function ($host) {
-            return [
-                'id' => $host->getId(),
-                'name' => $host->getName(),
-                'uuid' => $host->getHash(),
-                'ttl' => $host->getTtl(),
-                'last' => $host->getLastHeartbeat() ? $host->getLastHeartbeat()->toArray(): null,
-            ];
+        $hostsArray = array_map(function (Host $host) {
+            return $host->toArray();
         }, $hosts);
 
         return new JsonResponse($hostsArray);

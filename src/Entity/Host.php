@@ -146,4 +146,27 @@ class Host
     {
         $this->hash = Uuid::uuid4();
     }
+
+    public function isOverdue(): bool
+    {
+        if ($this->getLastHeartbeat()
+            && $this->getLastHeartbeat()->getDatetime()->add(new DateInterval($this->getTtl())) > new \DateTime()
+        ) {
+            return false;
+        }
+
+        return true;
+    }
+
+    public function toArray()
+    {
+        return [
+            'id' => $this->getId(),
+            'name' => $this->getName(),
+            'uuid' => $this->getHash(),
+            'ttl' => $this->getTtl(),
+            'last' => $this->getLastHeartbeat() ? $this->getLastHeartbeat()->toArray() : null,
+            'overdue' => $this->isOverdue(),
+        ];
+    }
 }

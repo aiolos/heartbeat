@@ -4,6 +4,18 @@ it can send heartbeats.
 The resulting API shows per device which are overdue. And from which IP the request came 
 (handy for changing IPs)
 
+## Installation:
+- Make a checkout of this repo
+- Install [composer](https://getcomposer.org)
+- Set the right credentials in you `.env` file
+- Run `php composer.phar install`
+- Run the database migrations: `./bin/console doctrine:migrations:migrate`
+
+## Usage
+- Add host via `http://yourdomain/admin/[admin_uuid]/host/add/[name]/[TTL]`
+- See the list of hosts with `http://yourdomain/admin/[admin_uuid]/host/list`
+- Add a new heartbeat via `http://yourdomain/ping/[host_uuid]`
+
 ## Models:
 - Heartbeat
   - ID

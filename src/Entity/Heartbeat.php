@@ -38,10 +38,6 @@ class Heartbeat
      **/
     protected $host;
 
-    public function __construct()
-    {
-    }
-
     public static function create($host)
     {
         $heartbeart = new Heartbeat();

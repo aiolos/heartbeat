@@ -137,9 +137,9 @@ class Host
         $this->heartbeats = $heartbeats;
     }
 
-    public function getLastHeartbeat(): Heartbeat
+    public function getLastHeartbeat(): ?Heartbeat
     {
-        return $this->getHeartbeats()->first();
+        return $this->getHeartbeats()->first() ?: null;
     }
 
     public function createHash()

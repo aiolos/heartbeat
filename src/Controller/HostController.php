@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Host;
 use App\Exceptions\HostNotFoundException;
+use App\Exceptions\InvalidAdminException;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -11,10 +12,15 @@ use Symfony\Component\Routing\Annotation\Route;
 class HostController extends Controller
 {
     /**
-     * @Route("/host/add/{name}/{ttl}")
+     * @Route("/admin/{adminUuid}/host/add/{name}/{ttl}")
+     * @return JsonResponse
+     * @throws InvalidAdminException
+     * @throws \App\Exceptions\InvalidIntervalException
      */
-    public function add($name, $ttl)
+    public function add($adminUuid, $name, $ttl)
     {
+        $this->checkAdminUuid($adminUuid);
+
         $em = $this->getDoctrine()->getManager();
 
         $host = Host::create($name, $ttl);
@@ -28,11 +34,14 @@ class HostController extends Controller
     }
 
     /**
-     * @Route("/host/details/{hash}")
+     * @Route("/admin/{adminUuid}/host/details/{hash}")
      * @throws HostNotFoundException
+     * @throws InvalidAdminException
      */
-    public function details($hash)
+    public function details($adminUuid, $hash)
     {
+        $this->checkAdminUuid($adminUuid);
+
         $em = $this->getDoctrine()->getManager();
 
         /** @var Host $host */
@@ -44,7 +53,40 @@ class HostController extends Controller
         return new JsonResponse([
             'id' => $host->getId(),
             'name' => $host->getName(),
-            'last' => $host->getLastHeartbeat()->toArray()
+            'ttl' => $host->getTtl(),
+            'last' => $host->getLastHeartbeat() ? $host->getLastHeartbeat()->toArray() : null,
         ]);
+    }
+
+    /**
+     * @Route("/admin/{uuid}/host/list")
+     * @throws InvalidAdminException
+     */
+    public function list($uuid)
+    {
+        $this->checkAdminUuid($uuid);
+
+        $em = $this->getDoctrine()->getManager();
+
+        /** @var Host $host */
+        $hosts = $em->getRepository('App\Entity\Host')->findAll();
+        $hostsArray = array_map(function ($host) {
+            return [
+                'id' => $host->getId(),
+                'name' => $host->getName(),
+                'uuid' => $host->getHash(),
+                'ttl' => $host->getTtl(),
+                'last' => $host->getLastHeartbeat() ? $host->getLastHeartbeat()->toArray(): null,
+            ];
+        }, $hosts);
+
+        return new JsonResponse($hostsArray);
+    }
+
+    private function checkAdminUuid($uuid)
+    {
+        if ($uuid !== getenv('ADMIN_UUID')) {
+            throw new InvalidAdminException('No valid uuid given');
+        }
     }
 }

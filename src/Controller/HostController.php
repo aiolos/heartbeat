@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Heartbeat;
 use App\Entity\Host;
 use App\Exceptions\HostNotFoundException;
 use App\Exceptions\InvalidAdminException;
@@ -50,7 +51,12 @@ class HostController extends Controller
             throw new HostNotFoundException('Unknown Host');
         }
 
-        return new JsonResponse($host->toArray());
+        $response = $host->toArray();
+        $response['heartbeats'] = array_map(function (Heartbeat $heartbeat) {
+            return $heartbeat->toArray();
+        }, $host->getHeartbeats()->slice(0, 10));
+
+        return new JsonResponse($response);
     }
 
     /**

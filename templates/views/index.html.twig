@@ -1,0 +1,53 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1 class="mt-5">Latest Statuses</h1>
+
+    <table class="table" id="heartbeatTable">
+    <thead>
+    <tr>
+        <td>Name</td>
+        <td>TTL</td>
+        <td>Last ping</td>
+        <td>IP</td>
+        <td>Status</td>
+    </tr>
+    </thead>
+</table>
+{%  endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready( function () {
+            $('#heartbeatTable').DataTable({
+                ajax: {
+                    url: '/admin/{{ adminUuid }}/host/list',
+                    dataSrc: 'hosts'
+                },
+                columns: [
+                    { data: "name" },
+                    { data: "ttl" },
+                    { data: "last", render: function (data) {
+                        if (data !== null && data.hasOwnProperty('datetime')) {
+                            return data.datetime;
+                        }
+                        return '';
+                    } },
+                    { data: "last", render: function (data) {
+                        if (data !== null) {
+                            return data.ip;
+                        }
+                        return '';
+                    } },
+                    { data: "overdue", render: function (data) {
+                        if (data) {
+                            return '<span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>';
+                        } else {
+                            return '<span class="badge badge-primary"><i class="fa fa-check-circle"></i></span>';
+                        }
+                    } }
+                ]
+            });
+        } );
+    </script>
+{% endblock %}

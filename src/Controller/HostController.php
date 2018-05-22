@@ -75,7 +75,7 @@ class HostController extends Controller
             return $host->toArray();
         }, $hosts);
 
-        return new JsonResponse($hostsArray);
+        return new JsonResponse(['hosts' => $hostsArray]);
     }
 
     private function checkAdminUuid($uuid)

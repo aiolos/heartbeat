@@ -6,6 +6,7 @@ use App\Entity\Heartbeat;
 use App\Entity\Host;
 use App\Exceptions\HostNotFoundException;
 use App\Exceptions\InvalidAdminException;
+use App\Helpers\Authenticate;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Routing\Annotation\Route;
@@ -20,7 +21,7 @@ class HostController extends Controller
      */
     public function add($adminUuid, $name, $ttl)
     {
-        $this->checkAdminUuid($adminUuid);
+        Authenticate::check($adminUuid);
 
         $em = $this->getDoctrine()->getManager();
 
@@ -41,7 +42,7 @@ class HostController extends Controller
      */
     public function details($adminUuid, $hash)
     {
-        $this->checkAdminUuid($adminUuid);
+        Authenticate::check($adminUuid);
 
         $em = $this->getDoctrine()->getManager();
 
@@ -65,7 +66,7 @@ class HostController extends Controller
      */
     public function list($uuid)
     {
-        $this->checkAdminUuid($uuid);
+        Authenticate::check($uuid);
 
         $em = $this->getDoctrine()->getManager();
 
@@ -76,12 +77,5 @@ class HostController extends Controller
         }, $hosts);
 
         return new JsonResponse(['hosts' => $hostsArray]);
-    }
-
-    private function checkAdminUuid($uuid)
-    {
-        if ($uuid !== getenv('ADMIN_UUID')) {
-            throw new InvalidAdminException('No valid uuid given');
-        }
     }
 }

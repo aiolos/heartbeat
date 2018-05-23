@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <a href="/{{ adminUuid }}" class="btn"><i class="fa fa-arrow-left"></i> Terug</a>
+    <h1 class="mt-5">
+        {% if host.overdue %}
+            <span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>
+        {% else %}
+            <span class="badge badge-success"><i class="fa fa-check-circle"></i></span>
+        {% endif %}
+        Host: {{ host.name }}
+    </h1>
+    Laatste ping: {{ host.last.datetime|date('Y-m-d H:i') }}<br>
+
+    <br>
+
+    <table class="table table-striped table-sm" id="hostBeatsTable">
+    <thead>
+    <tr>
+        <td>IP</td>
+        <td>Datum/Tijd</td>
+    </tr>
+    </thead>
+    <tbody>
+    {% for heartbeat in host.heartbeats %}
+        <tr>
+            <td>{{ heartbeat.ip }}</td>
+            <td class="text-right">{{ heartbeat.datetime|date('Y-m-d H:i') }}</td>
+        </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{%  endblock %}
+
+{% block javascripts %}
+    <script>
+        $(document).ready(function () {
+            $('#hostBeatsTable').DataTable();
+        });
+    </script>
+{% endblock %}

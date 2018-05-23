@@ -3,14 +3,14 @@
 {% block body %}
     <h1 class="mt-5">Latest Statuses</h1>
 
-    <table class="table" id="heartbeatTable">
+    <table class="table table-striped table-sm" id="heartbeatTable">
     <thead>
     <tr>
+        <td></td>
         <td>Name</td>
         <td>TTL</td>
         <td>Last ping</td>
         <td>IP</td>
-        <td>Status</td>
     </tr>
     </thead>
 </table>
@@ -25,7 +25,16 @@
                     dataSrc: 'hosts'
                 },
                 columns: [
-                    { data: "name" },
+                    { data: "overdue", render: function (data) {
+                        if (data) {
+                            return '<span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>';
+                        } else {
+                            return '<span class="badge badge-success"><i class="fa fa-check-circle"></i></span>';
+                        }
+                    } },
+                    { data: "name", render: function (data, type, row) {
+                            return '<a href="/{{ adminUuid }}/view/' + row.uuid + '">' + data + '</a>';
+                    } },
                     { data: "ttl" },
                     { data: "last", render: function (data) {
                         if (data !== null && data.hasOwnProperty('datetime')) {
@@ -38,13 +47,6 @@
                             return data.ip;
                         }
                         return '';
-                    } },
-                    { data: "overdue", render: function (data) {
-                        if (data) {
-                            return '<span class="badge badge-danger"><i class="fa fa-times-circle"></i></span>';
-                        } else {
-                            return '<span class="badge badge-primary"><i class="fa fa-check-circle"></i></span>';
-                        }
                     } }
                 ]
             });

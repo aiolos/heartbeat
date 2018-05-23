@@ -13,8 +13,9 @@ The resulting API shows per device which are overdue. And from which IP the requ
 
 ## Usage
 - Add host via `http://yourdomain/admin/[admin_uuid]/host/add/[name]/[TTL]`
-- See the list of hosts with `http://yourdomain/admin/[admin_uuid]/host/list`
+- Get a JSON list of hosts with `http://yourdomain/admin/[admin_uuid]/host/list`
 - Add a new heartbeat via `http://yourdomain/ping/[host_uuid]`
+- View the list of hosts with `http://yourdomain/[admin_uuid]`
 
 ## Models:
 - Heartbeat
@@ -26,7 +27,7 @@ The resulting API shows per device which are overdue. And from which IP the requ
   - Id
   - Name
   - Host(name)
-  - Heartbeat period
+  - TTL (Time to live, expected maximum time between 2 pings)
   - Hash
   
 ## API

@@ -150,7 +150,7 @@ class Host
     public function isOverdue(): bool
     {
         if ($this->getLastHeartbeat()
-            && $this->getLastHeartbeat()->getDatetime()->add(new DateInterval($this->getTtl())) > new \DateTime()
+            && $this->getLastHeartbeat()->getDatetime() > (new \DateTime())->sub(new DateInterval($this->getTtl()))
         ) {
             return false;
         }
